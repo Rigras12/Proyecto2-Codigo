@@ -20,6 +20,7 @@ public abstract class Producto {
 	private ArrayList<Lote> lotes=new ArrayList<Lote>();
 	private ArrayList<String> Subcategorias= new ArrayList<String>();
 	private String rutaimage;
+	private ListaRegistros historial;
 	
 	public Producto(int codigo, String almacenamiento,String unidad,String nombre,String categoria, String rutaimagen) throws IOException
 	{
@@ -32,6 +33,7 @@ public abstract class Producto {
 		total=0;
 		precio=0;
 		this.rutaimage = rutaimagen;
+		this.historial = new ListaRegistros();
 		
 		
 	}
@@ -119,6 +121,12 @@ public abstract class Producto {
 	{
 		this.categoria=categoria;
 	}
+	
+	public ListaRegistros getHistorial() {
+		return this.historial;
+	}
+	
+	
 	public void aniadirLote(Lote lote)
 	{	
 		double cantidadNueva;
