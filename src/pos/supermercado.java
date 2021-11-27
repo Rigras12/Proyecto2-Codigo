@@ -16,6 +16,7 @@ public class supermercado {
 	private Cliente clienteActual;
 	private int Puntos= 0;
 	private int total= 0;
+	private HashMap<Integer,Oferta> ofertas = new HashMap<Integer,Oferta>();
 	
 	public supermercado( LocalDate fechaActual,Inventario inventario)
 	{	this.fechaActual=fechaActual;
