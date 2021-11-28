@@ -1,6 +1,10 @@
 package pos;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import Inventario.Inventario;
@@ -16,7 +20,7 @@ public class supermercado {
 	private Cliente clienteActual;
 	private int Puntos= 0;
 	private int total= 0;
-	private HashMap<Integer,Oferta> ofertas = CargarOfertas();
+	private HashMap<Integer,ArrayList<Oferta>> ofertas = CargarOfertas();
 	
 	public supermercado( LocalDate fechaActual,Inventario inventario)
 	{	this.fechaActual=fechaActual;
@@ -24,8 +28,39 @@ public class supermercado {
 		this.inventario=inventario;
 		
 	}
-	private HashMap<Integer, Oferta> CargarOfertas() {
-		// TODO Auto-generated method stub
+	private HashMap<Integer, ArrayList<Oferta>> CargarOfertas()  {
+		HashMap<Integer, ArrayList<Oferta>> MapaOfertas = new HashMap<Integer, ArrayList<Oferta>>();
+		BufferedReader br = null;
+		try {
+	         
+	         br =new BufferedReader(new FileReader("./data/Ofertas.txt"));
+	         String line = br.readLine();
+	         while (null!=line) {
+	            String [] fields = line.split(",");
+	            String tipo = fields[1];
+	            if (tipo.equals("Descuento")) {
+	            	OfertaDescuento metodocompra = new OfertaDescuento(Integer.parseInt(fields[2]));
+	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
+	            	
+	            }
+	            else if (tipo.equals("Adicional")) {
+	            	OfertaRegalos metodocompra = new OfertaRegalos(Integer.parseInt(fields[2]),Integer.parseInt(fields[5]));
+	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
+	            }
+	            else if (tipo.equals("Punticos")) {
+	            	OfertaPuntos metodocompra = new OfertaPuntos(Integer.parseInt(fields[2]));
+	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
+	            }
+	            
+	            
+	            
+	            line = br.readLine();
+	         }
+	         
+	      } catch (Exception e) {
+	    	  System.err.println("Error! "+e.getMessage());
+	       
+	      }
 		return null;
 	}
 	public Inventario getInventario()
