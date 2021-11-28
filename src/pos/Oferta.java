@@ -5,14 +5,13 @@ import java.time.LocalDate;
 public class Oferta {
 	private LocalDate fechainicio;
 	private LocalDate fechafin;
-	private int tipo;
+	private MetodoCompra tipo;
 	// si tipo es 1 la oferta
 	
-	public Oferta(LocalDate inicio,LocalDate fin, ) {
+	public Oferta(LocalDate inicio,LocalDate fin, MetodoCompra tipoOferta) {
 		this.fechainicio = inicio;
 		this.fechafin = fin;
-		this.tipo = tipos;
-		
+		tipo = tipoOferta;
 	}
 	
 	
@@ -27,7 +26,9 @@ public class Oferta {
 	}
 	
 	
-	getOferta
+	public MetodoCompra getOferta(){
+		return this.tipo;
+	}
 	
 }
 

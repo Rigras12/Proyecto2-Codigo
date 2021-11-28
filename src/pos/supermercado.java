@@ -16,13 +16,17 @@ public class supermercado {
 	private Cliente clienteActual;
 	private int Puntos= 0;
 	private int total= 0;
-	private HashMap<Integer,Oferta> ofertas = new HashMap<Integer,Oferta>();
+	private HashMap<Integer,Oferta> ofertas = CargarOfertas();
 	
 	public supermercado( LocalDate fechaActual,Inventario inventario)
 	{	this.fechaActual=fechaActual;
 		
 		this.inventario=inventario;
 		
+	}
+	private HashMap<Integer, Oferta> CargarOfertas() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	public Inventario getInventario()
 	{
