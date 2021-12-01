@@ -14,14 +14,16 @@ public class OfertaDescuento implements MetodoCompra {
 	public int AplicarOferta( int codigo, int cantidad, Cliente cliente, Inventario inventario,
 			supermercado mercado) {
 		Producto producto = inventario.getProducto(codigo);
-		double precio=(producto.getPrecioCantidad(cantidad)/100*(100-descuento));
+		double precio=((producto.getPrecioCantidad(cantidad)/100)*(100-descuento));
 		producto.retirarProductos(cantidad);
 		producto.setbalance(producto.getBalance()+precio);
 		if (cliente!=null) {
 			cliente.agregarPuntos((int)precio/1000);
 		}
+		mercado.setTotal((int)(mercado.getTotal()-producto.getPrecioCantidad(cantidad)+precio));
 		// TODO Auto-generated method stub
 		return (int)precio;
+		
 	}
 
 }

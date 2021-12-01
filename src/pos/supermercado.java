@@ -250,6 +250,13 @@ public class supermercado {
 		
 	}
 
+	public void setTotal(int toal) {
+		this.total = toal;
+	}
+	
+	public void setPuntos(int pun) {
+		this.Puntos = pun;
+	}
 
 	public void actualizarCantidadProducto(int actual, int codigo) {
 		// TODO Auto-generated method stub

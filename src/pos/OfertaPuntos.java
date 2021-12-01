@@ -18,13 +18,15 @@ public class OfertaPuntos implements MetodoCompra{
 		double precio = producto.getPrecioCantidad(cantidad);
 		producto.retirarProductos(cantidad);
 		producto.setbalance(producto.getBalance()+precio);
+		int puntos = (int)(precio/1000)*multiplicacion;
 		if (cliente!=null) {
-			cliente.agregarPuntos((int)precio/1000*multiplicacion);
+			cliente.agregarPuntos(puntos);
 		}
+		mercado.setPuntos((int)puntos+mercado.getPuntosActuales()-(puntos/multiplicacion));
 		return (int)precio;
 	}
-
 	
 	
-
+	
+	
 }

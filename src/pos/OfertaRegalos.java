@@ -20,6 +20,7 @@ public class OfertaRegalos implements MetodoCompra {
 		Producto producto = inventario.getProducto(codigo);
 		double precio = producto.getPrecioCantidad(cantidad);
 		mercado.actualizarCantidadProducto(ganados+cantidad,codigo);
+		
 		producto.retirarProductos(ganados+cantidad);
 		producto.setbalance(producto.getBalance()+precio);
 		if (cliente!=null) {
