@@ -7,7 +7,7 @@ public interface MetodoCompra {
 	
 	
 	
-	public int AplicarOferta(int numero, int codigo, int cantidad, Cliente cliente,Inventario inventario, supermercado mercado);
+	public int AplicarOferta( int codigo, int cantidad, Cliente cliente,Inventario inventario, supermercado mercado);
 	
 	
 	

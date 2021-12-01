@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import Inventario.Inventario;
 import Inventario.Producto;
@@ -20,6 +21,7 @@ public class supermercado {
 	private Cliente clienteActual;
 	private int Puntos= 0;
 	private int total= 0;
+	private CompraNormal compraNormal = new CompraNormal();
 	private HashMap<Integer,ArrayList<Oferta>> ofertas = CargarOfertas();
 	
 	public supermercado( LocalDate fechaActual,Inventario inventario)
@@ -28,6 +30,8 @@ public class supermercado {
 		this.inventario=inventario;
 		
 	}
+	
+	
 	private HashMap<Integer, ArrayList<Oferta>> CargarOfertas()  {
 		HashMap<Integer, ArrayList<Oferta>> MapaOfertas = new HashMap<Integer, ArrayList<Oferta>>();
 		BufferedReader br = null;
@@ -41,15 +45,44 @@ public class supermercado {
 	            if (tipo.equals("Descuento")) {
 	            	OfertaDescuento metodocompra = new OfertaDescuento(Integer.parseInt(fields[2]));
 	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
-	            	
+	            	int codigo = Integer.parseInt(fields[0]);
+	            	if (MapaOfertas.containsKey(codigo)) {
+	            		ArrayList<Oferta> lista = MapaOfertas.get(codigo);
+	            		lista.add(nuevaOferta);
+	            	}
+	            	else {
+	            		ArrayList<Oferta> lista = new ArrayList<Oferta>();
+	            		lista.add(nuevaOferta);
+	            		MapaOfertas.put(codigo, lista);
+	            	}
 	            }
 	            else if (tipo.equals("Adicional")) {
 	            	OfertaRegalos metodocompra = new OfertaRegalos(Integer.parseInt(fields[2]),Integer.parseInt(fields[5]));
 	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
+	            	int codigo = Integer.parseInt(fields[0]);
+	            	if (MapaOfertas.containsKey(codigo)) {
+	            		ArrayList<Oferta> lista = MapaOfertas.get(codigo);
+	            		lista.add(nuevaOferta);
+	            	}
+	            	else {
+	            		ArrayList<Oferta> lista = new ArrayList<Oferta>();
+	            		lista.add(nuevaOferta);
+	            		MapaOfertas.put(codigo, lista);
+	            	}
 	            }
 	            else if (tipo.equals("Punticos")) {
 	            	OfertaPuntos metodocompra = new OfertaPuntos(Integer.parseInt(fields[2]));
 	            	Oferta nuevaOferta = new Oferta(LocalDate.parse(fields[3]),LocalDate.parse(fields[4]), metodocompra);
+	            	int codigo = Integer.parseInt(fields[0]);
+	            	if (MapaOfertas.containsKey(codigo)) {
+	            		ArrayList<Oferta> lista = MapaOfertas.get(codigo);
+	            		lista.add(nuevaOferta);
+	            	}
+	            	else {
+	            		ArrayList<Oferta> lista = new ArrayList<Oferta>();
+	            		lista.add(nuevaOferta);
+	            		MapaOfertas.put(codigo, lista);
+	            	}
 	            }
 	            
 	            
@@ -61,8 +94,20 @@ public class supermercado {
 	    	  System.err.println("Error! "+e.getMessage());
 	       
 	      }
-		return null;
+		return MapaOfertas;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public Inventario getInventario()
 	{
 		return inventario;
@@ -91,7 +136,26 @@ public class supermercado {
 	}
 	
 	
-	
+	public void aniadirProducto(int codigo,double cantidad) {
+		
+		if (productos.containsKey(codigo)) {
+			cantidad = productos.get(codigo)+(int)cantidad;
+			productos.put(codigo, (int)cantidad);
+			
+		}
+		else {
+			productos.put(codigo,(int)cantidad);
+			
+		}
+		
+		double precio = inventario.getProducto(codigo).getPrecioCantidad(cantidad);
+		total += precio;
+		Puntos += (int)precio/1000;
+		
+		
+		
+		
+	}
 	
 		
 		
@@ -116,19 +180,45 @@ public class supermercado {
 		
 		cliente.agregarPuntos(puntos);
 	}
-	public void aniadirProductoFactura(Producto producto, int cantidad)
-	{
-		
-		String factura =   String.valueOf(cantidad) + "," + producto.getPrecioCantidad(cantidad) + "," + (int)(producto.getPrecioCantidad(cantidad)/1000);
-		
-	}
 	
-	public void finalizarCompra()
+	
+	public void finalizarCompra(boolean PagaconPuntos)
 	{
-		if (clienteActual!=null) {
-			clienteActual.agregarPuntos(Puntos);
-			clienteActual.aniadirgasto(total);; 
+		
+		Set<Integer> keys = productos.keySet();
+		for(Integer key:keys) {
+			boolean encontro = false;
+			int cantidad = productos.get(key);
+			
+			if (ofertas.containsKey(key)) {
+				
+				ArrayList<Oferta> listaofertas = ofertas.get(key);
+				
+				for (int i=0;i<listaofertas.size() && !encontro;i++) {
+					
+					Oferta ofertaActual = listaofertas.get(i);
+					if (ofertaActual.esValida(fechaActual)) {
+						ofertaActual.getOferta().AplicarOferta( key, cantidad, clienteActual, inventario, this);
+						encontro = true;
+					}
+				}
+				
+			}
+			else if (!encontro){
+				compraNormal.AplicarOferta(key, cantidad, clienteActual, inventario, this);
+				
+			}
+				
+			
+			
+			
+			
 		}
+		
+		
+		
+		
+		
 		productos = new HashMap<Integer,Integer>();
 		clienteActual=null;
 		Puntos= 0;
@@ -158,5 +248,11 @@ public class supermercado {
 	public int getHistoricoComprasCliente() {
 		return clienteActual.getHistoricoCompras();
 		
+	}
+
+
+	public void actualizarCantidadProducto(int actual, int codigo) {
+		// TODO Auto-generated method stub
+		productos.put(codigo, actual);
 	}
 }

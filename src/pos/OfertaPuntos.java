@@ -11,7 +11,7 @@ public class OfertaPuntos implements MetodoCompra{
 	}
 	
 	
-	public int AplicarOferta(int numero, int codigo, int cantidad, Cliente cliente, Inventario inventario,
+	public int AplicarOferta( int codigo, int cantidad, Cliente cliente, Inventario inventario,
 			supermercado mercado) {
 		// TODO Auto-generated method stub
 		Producto producto = inventario.getProducto(codigo);

@@ -13,13 +13,14 @@ public class OfertaRegalos implements MetodoCompra {
 	}
 	
 	
-	public int AplicarOferta(int numero, int codigo, int cantidad, Cliente cliente, Inventario inventario,
+	public int AplicarOferta( int codigo, int cantidad, Cliente cliente, Inventario inventario,
 			supermercado mercado) {
 		// TODO Auto-generated method stub
 		int ganados = (int)(cantidad/minimo)*adicional;
 		Producto producto = inventario.getProducto(codigo);
 		double precio = producto.getPrecioCantidad(cantidad);
-		producto.retirarProductos(ganados);
+		mercado.actualizarCantidadProducto(ganados+cantidad,codigo);
+		producto.retirarProductos(ganados+cantidad);
 		producto.setbalance(producto.getBalance()+precio);
 		if (cliente!=null) {
 			cliente.agregarPuntos((int)precio/1000);
