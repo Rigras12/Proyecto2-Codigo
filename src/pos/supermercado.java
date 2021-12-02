@@ -23,6 +23,8 @@ public class supermercado {
 	private int total= 0;
 	private CompraNormal compraNormal = new CompraNormal();
 	private HashMap<Integer,ArrayList<Oferta>> ofertas = CargarOfertas();
+	private ArrayList<Combos> combos = new ArrayList<Combos>();
+	private ArrayList<Combos> combosAComprar = new ArrayList<Combos>();
 	
 	public supermercado( LocalDate fechaActual,Inventario inventario)
 	{	this.fechaActual=fechaActual;
@@ -100,8 +102,47 @@ public class supermercado {
 	
 	
 	
-	
-	
+	public void cargarCombos() {
+		
+		BufferedReader br = null;
+		try {
+	         
+	         br =new BufferedReader(new FileReader("./data/Combos.txt"));
+	         String line = br.readLine();
+	         while (null!=line) {
+	            String [] fields = line.split(",");
+	            
+	            if (fields[0].charAt(0) == '\"')
+	            {
+	            	fields[0] = fields[0].substring(1);
+	            	
+	            }
+	            LocalDate fechaini = LocalDate.parse(fields[0]);
+	            LocalDate fechafin = LocalDate.parse(fields[1]);
+	            if (fechaActual.compareTo(fechaini)>=0 && fechaActual.compareTo(fechafin)<=0) {
+	            	ArrayList<Integer> codigos = new ArrayList<Integer>();
+		            int cant = Integer.parseInt(fields[2]);
+		            for (int i=0;i<cant;i++) {
+		            	codigos.add(Integer.parseInt(fields[4+i]));
+		            }
+		            combos.add(new Combos(codigos,Integer.parseInt(fields[3])));
+		            
+	            }
+	            
+	            
+	           
+	           
+	            
+	            
+	            line = br.readLine();
+	         }
+	         
+	      } catch (Exception e) {
+	    	  System.err.println("Error! "+e.getMessage());
+	      } 
+		
+		
+	}
 	
 	
 	
@@ -161,25 +202,33 @@ public class supermercado {
 		
 	
 	
-	
-	
-	
-	
-	public void aniadirPuntosxProducto(double compra) {
-		this.Puntos += (int)(compra/1000);
-	}
-	public void quitarPuntosxProducto(double precio) {
-		this.Puntos-= (int)(precio/1000);
+	public void AniadirCombo(int indice) {
 		
+		Combos combo = combos.get(indice);
+		ArrayList<Integer> productoscombo = combo.getCombo();
+		
+		for (int i=0;i<productoscombo.size();i++) {
+			Producto producto = inventario.getProducto(productoscombo.get(i));
+			 int precio = (int)((producto.getPrecio()/100)*(100-combo.getDescuento()));
+			 total += precio;
+			 Puntos += (int)precio/1000;
+		}
+		combosAComprar.add(combo);
 		
 	}
 	
 	
-	public void aniadirPuntos(int puntos, Cliente cliente)
-	{	
-		
-		cliente.agregarPuntos(puntos);
-	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public void finalizarCompra(boolean PagaconPuntos)
@@ -201,24 +250,39 @@ public class supermercado {
 						ofertaActual.getOferta().AplicarOferta( key, cantidad, clienteActual, inventario, this);
 						encontro = true;
 					}
-				}
-				
+				}		
 			}
 			else if (!encontro){
 				compraNormal.AplicarOferta(key, cantidad, clienteActual, inventario, this);
 				
 			}
-				
+		}
+		
+		for (int j=0;j<combosAComprar.size();j++) {
+			Combos comboactual = combosAComprar.get(j);
+			ArrayList<Integer> productosCombo = comboactual.getCombo();
+			for  (int p=0;p<productosCombo.size();p++) {
+				comboactual.getOferta().AplicarOferta(productosCombo.get(p), 1, clienteActual, inventario, this);
+			}
+		}
+		
+		if (clienteActual != null && !PagaconPuntos) {
+			clienteActual.agregarPuntos(Puntos);
+		}
+		if (PagaconPuntos && clienteActual != null) {
 			
-			
-			
+				int puntosgastados = clienteActual.getPuntos()*15;
+				if (puntosgastados>total) {
+					clienteActual.quitarPuntos(total);
+				} else {
+					total -= puntosgastados;
+					clienteActual.quitarPuntos(puntosgastados);
+				}
 			
 		}
 		
 		
-		
-		
-		
+		combosAComprar = new ArrayList<Combos>();
 		productos = new HashMap<Integer,Integer>();
 		clienteActual=null;
 		Puntos= 0;
